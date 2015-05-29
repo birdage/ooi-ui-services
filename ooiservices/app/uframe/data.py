@@ -25,19 +25,18 @@ def find_parameter_ids(mooring, platform, instrument, yfields,xfields):
 
     parameter_dict = {}
     
-    for each in parameter_list:
-        parameter_dict[each['particleKey']] = each['pdId']
+    for param in parameter_list:
+        parameter_dict[param['particleKey']] = param['pdId']
     
-    parameters = yfields
     parameter_ids = [str(parameter_dict['time']).strip()]
 
-    for each in parameters:
-        parameter_ids.append(str(parameter_dict[each]).strip())
+    for yfield in yfields:
+        parameter_ids.append(str(parameter_dict[yfield]).strip())
     return parameter_ids
 
 
 def get_data(stream, instrument, yfields, xfields, include_time=True):
-    from ooiservices.app.uframe.controller import split_stream_name, get_uframe_plot_contents_chunked,validate_date_time, get_uframe_stream_contents_chunked
+    from ooiservices.app.uframe.controller import split_stream_name, get_uframe_plot_contents_chunked,validate_date_time, get_uframe_stream_contents_chunked, to_bool_str
     '''get data from uframe
     # -------------------
     # m@c: 02/01/2015
@@ -47,8 +46,7 @@ def get_data(stream, instrument, yfields, xfields, include_time=True):
     #-------------------
     # TODO: create better error handler if uframe is not online/responding
     '''
-    mooring, platform, instrument, stream_type, stream = split_stream_name('_'.join([instrument, stream]))
-    
+    mooring, platform, instrument, stream_type, stream = split_stream_name('_'.join([instrument, stream]))    
     parameter_ids = find_parameter_ids(mooring, platform, instrument, yfields,xfields)
     
     
@@ -59,7 +57,7 @@ def get_data(stream, instrument, yfields, xfields, include_time=True):
 
             ed_date = validate_date_time(st_date,ed_date)
             if 'dpa_flag' in request.args:
-                dpa_flag = request.args['dpa_flag']
+                dpa_flag = to_bool_str(request.args['dpa_flag'])
             else:    
                 dpa_flag = "0"   
 
